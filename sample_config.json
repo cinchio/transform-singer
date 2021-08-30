@@ -1,0 +1,43 @@
+{
+    "meta": {
+        "foo": "bar",
+    },
+    "mappings": {
+        "tapStream": [
+            {
+                "stream": "targetStream",
+                "properties": {
+                    "firstName": {
+                        "type": "record",
+                        "key": "firstName"
+                    },
+                    "lastName": {
+                        "type": "record",
+                        "key": "lastName"
+                    },
+                    "fullName": {
+                        "type": "join",
+                        "pieces": [
+                            {
+                                "type": "record",
+                                "key": "firstName"
+                            },
+                            {
+                                "type": "text",
+                                "val": " "
+                            },
+                            {
+                                "type": "record",
+                                "key": "lastName"
+                            }
+                        ]
+                    },
+                    "foo": {
+                        "type": "config",
+                        "key": "foo"
+                    }
+                }
+            }
+        ]
+    }
+}
