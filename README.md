@@ -1,2 +1,2 @@
 # transform-singer
-Pipe based command tool for transform Singer.io schemas and records.
+Pipe based command tool for transforming Singer.io schemas and records.

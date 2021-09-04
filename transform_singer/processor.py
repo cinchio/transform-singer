@@ -27,7 +27,7 @@ class Processor:
             return mapping['val']
         elif mapping['type'] == 'join':
             # Join all of the "pieces" after they are processed through this function
-            return ''.join([self.process_mapping(mapping, record) for mapping in mapping['pieces']])
+            return ''.join([str(self.process_mapping(mapping, record)) for mapping in mapping['pieces']])
         elif mapping['type'] == 'coalesce':
             # Find the first processed value this exists and use that.
             return next((self.process_mapping(mapping, record) for mapping in mapping['objects'] if self.process_mapping(mapping, record)), None)
@@ -64,9 +64,11 @@ class Processor:
                     # We actually didn't find a list so let's move on to the next mapping
                     continue
 
-                for item in items:
+                for i in range(len(items)):
+                    item = items[i]
+
                     # Loop through the sub items of this record and process them.
-                    record = {**item, '@parent': message['record']}
+                    record = {**item, '@parent': message['record'], '@index': i}
 
                     self.process_record({"stream": message['stream'] + '.' + next_level, "record": record})
 
