@@ -72,7 +72,7 @@ class Processor:
             return next((self.process_mapping(mapping, record) for mapping in mapping['objects'] if self.process_mapping(mapping, record)), None)
         elif mapping['type'] == 'substr':
             # Find the first processed value this exists and use that.
-            return self.process_mapping(mapping['object'], record)[:mapping['type']['length']]
+            return self.process_mapping(mapping['object'], record)[:mapping['length']]
         elif mapping['type'] == 'if':
             """
             Run a condition on the mapping.   This particularly useless mapping will change the first_name if it's Chris to Christopher.
