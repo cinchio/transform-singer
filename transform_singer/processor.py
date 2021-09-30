@@ -1,4 +1,5 @@
 import singer
+from singer import logger
 from transform_singer.utils import nested_get, nested_set
 
 class Processor:
@@ -73,6 +74,37 @@ class Processor:
         elif mapping['type'] == 'substr':
             # Find the first processed value this exists and use that.
             return self.process_mapping(mapping['object'], record)[:mapping['length']]
+        elif mapping['type'] == 'sum':
+            # Add all of the "objects" together
+            sum = 0
+
+            for obj in mapping['objects']:
+                try:
+                    sum += float(self.process_mapping(obj, record))
+                except ValueError:
+                    pass
+
+            return sum
+        elif mapping['type'] == 'difference':
+            # Start with the first of the "objects" and subtract all of the other "objects" from it
+            is_first = True
+            diff = 0
+
+            for obj in mapping['objects']:
+                try:
+                    if is_first:
+                        diff = float(self.process_mapping(obj, record))
+                    else:
+                        diff -= float(self.process_mapping(obj, record))
+                except ValueError:
+                    pass
+
+                is_first = False
+
+            return diff
+        elif mapping['type'] == 'difference':
+            # Find the first processed value this exists and use that.
+            return self.process_mapping(mapping['object'], record)[:mapping['length']]
         elif mapping['type'] == 'if':
             """
             Run a condition on the mapping.   This particularly useless mapping will change the first_name if it's Chris to Christopher.
@@ -119,6 +151,10 @@ class Processor:
         for mapping in self.config['mappings'][message['stream']]:
             # Loop through the mappings of this stream and process the record.
             record = {}
+
+            if 'exclude' in mapping and bool(self.process_mapping(mapping['exclude'], message['record'])):
+                # Skip this record because of the config
+                continue
 
             for target, conf in mapping['properties'].items():
                 # Loop through each mapping item and set the the value on the record
