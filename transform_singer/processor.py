@@ -109,6 +109,34 @@ class Processor:
                     pass
 
             return sum
+        elif mapping["type"] == "multiply":
+            # Multiply all of the "objects" together
+            product = 0
+
+            for obj in mapping["objects"]:
+                try:
+                    product *= float(self.process_mapping(obj, record))
+                except ValueError:
+                    pass
+
+            return product
+        elif mapping["type"] == "divide":
+            # Start with the first of the "objects" and divide all of the other "objects" from it
+            is_first = True
+            quotient = 0
+
+            for obj in mapping["objects"]:
+                try:
+                    if is_first:
+                        quotient = float(self.process_mapping(obj, record))
+                    else:
+                        quotient *= float(self.process_mapping(obj, record))
+                except ValueError:
+                    pass
+
+                is_first = False
+
+            return quotient
         elif mapping["type"] == "difference":
             # Start with the first of the "objects" and subtract all of the other "objects" from it
             is_first = True
