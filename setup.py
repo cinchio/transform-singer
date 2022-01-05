@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="transform-singer",
-    version="0.1.6",
+    version="0.1.7",
     description="Singer.io transform for converting schemas and records between a tap and a target",
     author="Cinch",
     url="https://github.com/cinchio/transform-singer",

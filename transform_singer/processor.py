@@ -1,6 +1,7 @@
 import singer
 import copy
 from singer import logger
+import hashlib
 from transform_singer.utils import nested_get, nested_set
 
 
@@ -92,8 +93,11 @@ class Processor:
                 None,
             )
         elif mapping["type"] == "substr":
-            # Find the first processed value this exists and use that.
+            # Return the first `length` number of characters of a string
             return self.process_mapping(mapping["object"], record)[: mapping["length"]]
+        elif mapping["type"] == "hash":
+            # Return a hashed string
+            return hashlib.md5(self.process_mapping(mapping["object"], record).encode('utf-8')).hexdigest()
         elif mapping["type"] == "sum":
             # Add all of the "objects" together
             sum = 0
