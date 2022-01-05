@@ -94,7 +94,7 @@ class Processor:
             )
         elif mapping["type"] == "substr":
             # Return the first `length` number of characters of a string
-            return self.process_mapping(mapping["object"], record)[: mapping["length"]]
+            return self.process_mapping(mapping["object"], record)[mapping.get("start", 0): mapping["length"]]
         elif mapping["type"] == "hash":
             # Return a hashed string
             return hashlib.md5(self.process_mapping(mapping["object"], record).encode('utf-8')).hexdigest()
