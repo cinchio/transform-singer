@@ -225,22 +225,25 @@ class Processor:
         )
 
         for key in nested_sources:
-            next_level = key[len(stream + ".") :].split(".")[0]
-            next_stream = f"{stream}.{next_level}"
-            items = nested_get(record, next_level)
+                next_level = key[len(stream + ".") :].split(".")[0]
+                next_stream = f"{stream}.{next_level}"
+                items = nested_get(record, next_level)
 
-            if isinstance(items, list):
-                for i in range(len(items)):
-                    item = copy.deepcopy(items[i])
-                    item["@parent"] = record
-                    item["@root"] = root
-                    item["@index"] = i
+                if isinstance(items, list):
+                    for i in range(len(items)):
+                        item = copy.deepcopy(items[i])
+                        item["@parent"] = record
+                        item["@root"] = root
+                        item["@index"] = i
+                        self.process_record(next_stream, item, root)
+                else:
+                    item = copy.deepcopy(items)
+                    try:
+                        item["@parent"] = record
+                        item["@root"] = root
+                    except:
+                        logger.log_info(f'Error trying to set parent/root {item}')
                     self.process_record(next_stream, item, root)
-            else:
-                item = copy.deepcopy(items)
-                item["@parent"] = record
-                item["@root"] = root
-                self.process_record(next_stream, item, root)
 
 
     def process_state(self, message):
