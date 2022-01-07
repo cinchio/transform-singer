@@ -63,133 +63,136 @@ class Processor:
         return False
 
     def process_mapping(self, mapping, record):
-        if not mapping:
-            return
-        elif mapping["type"] == "record":
-            # Grab a potentially nested value from the record object
-            return nested_get(record, mapping["key"])
-        elif mapping["type"] == "config":
-            # Grab a potentially nested value from the config meta object
-            return nested_get(self.config["meta"], mapping["key"])
-        elif mapping["type"] == "text":
-            # Set a hard coded text value
-            return mapping["val"]
-        elif mapping["type"] == "join":
-            # Join all of the "pieces" after they are processed through this function
-            return "".join(
-                [
-                    str(self.process_mapping(mapping, record))
-                    for mapping in mapping["pieces"]
-                ]
-            )
-        elif mapping["type"] == "coalesce":
-            # Find the first processed value this exists and use that.
-            return next(
-                (
-                    self.process_mapping(mapping, record)
-                    for mapping in mapping["objects"]
-                    if self.process_mapping(mapping, record)
-                ),
-                None,
-            )
-        elif mapping["type"] == "substr":
-            # Return the first `length` number of characters of a string
-            return self.process_mapping(mapping["object"], record)[mapping.get("start", 0): mapping["length"]]
-        elif mapping["type"] == "hash":
-            # Return a hashed string
-            return hashlib.md5(self.process_mapping(mapping["object"], record).encode('utf-8')).hexdigest()
-        elif mapping["type"] == "sum":
-            # Add all of the "objects" together
-            sum = 0
+        try:
+            if not mapping:
+                return
+            elif mapping["type"] == "record":
+                # Grab a potentially nested value from the record object
+                return nested_get(record, mapping["key"])
+            elif mapping["type"] == "config":
+                # Grab a potentially nested value from the config meta object
+                return nested_get(self.config["meta"], mapping["key"])
+            elif mapping["type"] == "text":
+                # Set a hard coded text value
+                return mapping["val"]
+            elif mapping["type"] == "join":
+                # Join all of the "pieces" after they are processed through this function
+                return "".join(
+                    [
+                        str(self.process_mapping(mapping, record))
+                        for mapping in mapping["pieces"]
+                    ]
+                )
+            elif mapping["type"] == "coalesce":
+                # Find the first processed value this exists and use that.
+                return next(
+                    (
+                        self.process_mapping(mapping, record)
+                        for mapping in mapping["objects"]
+                        if self.process_mapping(mapping, record)
+                    ),
+                    None,
+                )
+            elif mapping["type"] == "substr":
+                # Return the first `length` number of characters of a string
+                return self.process_mapping(mapping["object"], record)[mapping.get("start", 0): mapping["length"]]
+            elif mapping["type"] == "hash":
+                # Return a hashed string
+                return hashlib.md5(self.process_mapping(mapping["object"], record).encode('utf-8')).hexdigest()
+            elif mapping["type"] == "sum":
+                # Add all of the "objects" together
+                sum = 0
 
-            for obj in mapping["objects"]:
-                try:
-                    sum += float(self.process_mapping(obj, record))
-                except ValueError:
-                    pass
+                for obj in mapping["objects"]:
+                    try:
+                        sum += float(self.process_mapping(obj, record))
+                    except ValueError:
+                        pass
 
-            return sum
-        elif mapping["type"] == "multiply":
-            # Multiply all of the "objects" together
-            product = 0
+                return sum
+            elif mapping["type"] == "multiply":
+                # Multiply all of the "objects" together
+                product = 0
 
-            for obj in mapping["objects"]:
-                try:
-                    product *= float(self.process_mapping(obj, record))
-                except ValueError:
-                    pass
+                for obj in mapping["objects"]:
+                    try:
+                        product *= float(self.process_mapping(obj, record))
+                    except ValueError:
+                        pass
 
-            return product
-        elif mapping["type"] == "divide":
-            # Start with the first of the "objects" and divide all of the other "objects" from it
-            is_first = True
-            quotient = 0
+                return product
+            elif mapping["type"] == "divide":
+                # Start with the first of the "objects" and divide all of the other "objects" from it
+                is_first = True
+                quotient = 0
 
-            for obj in mapping["objects"]:
-                try:
-                    if is_first:
-                        quotient = float(self.process_mapping(obj, record))
-                    else:
-                        quotient *= float(self.process_mapping(obj, record))
-                except ValueError:
-                    pass
+                for obj in mapping["objects"]:
+                    try:
+                        if is_first:
+                            quotient = float(self.process_mapping(obj, record))
+                        else:
+                            quotient *= float(self.process_mapping(obj, record))
+                    except ValueError:
+                        pass
 
-                is_first = False
+                    is_first = False
 
-            return quotient
-        elif mapping["type"] == "difference":
-            # Start with the first of the "objects" and subtract all of the other "objects" from it
-            is_first = True
-            diff = 0
+                return quotient
+            elif mapping["type"] == "difference":
+                # Start with the first of the "objects" and subtract all of the other "objects" from it
+                is_first = True
+                diff = 0
 
-            for obj in mapping["objects"]:
-                try:
-                    if is_first:
-                        diff = float(self.process_mapping(obj, record))
-                    else:
-                        diff -= float(self.process_mapping(obj, record))
-                except ValueError:
-                    pass
+                for obj in mapping["objects"]:
+                    try:
+                        if is_first:
+                            diff = float(self.process_mapping(obj, record))
+                        else:
+                            diff -= float(self.process_mapping(obj, record))
+                    except ValueError:
+                        pass
 
-                is_first = False
+                    is_first = False
 
-            return diff
-        elif mapping["type"] == "if":
-            """
-            Run a condition on the mapping.   This particularly useless mapping will change the first_name if it's Chris to Christopher.
-            Otherwise it will return the original first_name.  For nested if statements you can add another "if" type in the "else" or the
-            "then".
+                return diff
+            elif mapping["type"] == "if":
+                """
+                Run a condition on the mapping.   This particularly useless mapping will change the first_name if it's Chris to Christopher.
+                Otherwise it will return the original first_name.  For nested if statements you can add another "if" type in the "else" or the
+                "then".
 
-            Example:
-            {
-                "type": "if",
-                "condition": {
-                    "operator": "eq",
-                    "left": {
+                Example:
+                {
+                    "type": "if",
+                    "condition": {
+                        "operator": "eq",
+                        "left": {
+                            "type": "record",
+                            "key": "first_name",
+                        },
+                        "right": {
+                            "type": "text",
+                            "val": "Chris"
+                        }
+                    }
+                    "then": {
+                        "type": "text",
+                        "val": "Christopher"
+                    },
+                    "else": {
                         "type": "record",
                         "key": "first_name",
-                    },
-                    "right": {
-                        "type": "text",
-                        "val": "Chris"
                     }
                 }
-                "then": {
-                    "type": "text",
-                    "val": "Christopher"
-                },
-                "else": {
-                    "type": "record",
-                    "key": "first_name",
-                }
-            }
-            """
-            if self._process_condition(mapping.get("condition"), record):
-                # If the condition passed, then return the "then" value
-                return self.process_mapping(mapping.get("then"), record)
+                """
+                if self._process_condition(mapping.get("condition"), record):
+                    # If the condition passed, then return the "then" value
+                    return self.process_mapping(mapping.get("then"), record)
 
-            # Condition didn't pass, send the "else" value
-            return self.process_mapping(mapping.get("else"), record)
+                # Condition didn't pass, send the "else" value
+                return self.process_mapping(mapping.get("else"), record)
+        except:
+            logger.log_info(f'Unable to run mapping {mapping} for record: {record}')
 
     def process_record(self, stream, record, root=None):
         root = root if root else record
