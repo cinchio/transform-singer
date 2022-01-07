@@ -236,7 +236,7 @@ class Processor:
                         item["@root"] = root
                         item["@index"] = i
                         self.process_record(next_stream, item, root)
-                else:
+                elif items:
                     item = copy.deepcopy(items)
                     try:
                         item["@parent"] = record
