@@ -207,18 +207,14 @@ class Processor:
                     # Skip this record because of the config
                     continue
 
-                try:
-                    for target, conf in mapping["properties"].items():
-                        # Loop through each mapping item and set the the value on the record
-                        mapped_record = nested_set(
-                            mapped_record, target, self.process_mapping(conf, record)
-                        )
+                for target, conf in mapping["properties"].items():
+                    # Loop through each mapping item and set the the value on the record
+                    mapped_record = nested_set(
+                        mapped_record, target, self.process_mapping(conf, record)
+                    )
 
-                    # Add the record to the queue for posting to API later
-                    singer.write_record(mapping["stream"], mapped_record)
-                except:
-                    # There was an issue processing this record.
-                    logger.log_info(f'Error parsing mapping for {mapping["stream"]} for record: {record}')
+                # Add the record to the queue for posting to API later
+                singer.write_record(mapping["stream"], mapped_record)
 
         nested_sources = set(
             [
