@@ -51,6 +51,10 @@ class Processor:
 
         if obj["operator"] == "eq":
             return left == right
+
+        if left is None or right is None:
+            return False
+
         if obj["operator"] == "lt":
             return left < right
         if obj["operator"] == "lte":
