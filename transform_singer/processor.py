@@ -75,6 +75,12 @@ class Processor:
             elif mapping["type"] == "text":
                 # Set a hard coded text value
                 return mapping["val"]
+            elif mapping["type"] == "float":
+                # Set a hard coded text value
+                try:
+                    return float(mapping["val"])
+                except:
+                    return None
             elif mapping["type"] == "join":
                 # Join all of the "pieces" after they are processed through this function
                 return "".join(
@@ -99,6 +105,11 @@ class Processor:
             elif mapping["type"] == "hash":
                 # Return a hashed string
                 return hashlib.md5(self.process_mapping(mapping["object"], record).encode('utf-8')).hexdigest()
+            elif mapping["type"] == "tofloat":
+                try:
+                    return float(self.process_mapping(mapping["object"], record))
+                except:
+                    return None
             elif mapping["type"] == "sum":
                 # Add all of the "objects" together
                 sum = 0
