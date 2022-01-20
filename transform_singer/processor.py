@@ -105,10 +105,14 @@ class Processor:
                 )
             elif mapping["type"] == "substr":
                 # Return the first `length` number of characters of a string
-                return self.process_mapping(mapping["object"], record)[mapping.get("start", 0): mapping["length"]]
+                return self.process_mapping(mapping["object"], record)[
+                    mapping.get("start", 0) : mapping["length"]
+                ]
             elif mapping["type"] == "hash":
                 # Return a hashed string
-                return hashlib.md5(self.process_mapping(mapping["object"], record).encode('utf-8')).hexdigest()
+                return hashlib.md5(
+                    self.process_mapping(mapping["object"], record).encode("utf-8")
+                ).hexdigest()
             elif mapping["type"] == "tofloat":
                 try:
                     return float(self.process_mapping(mapping["object"], record))
@@ -127,7 +131,7 @@ class Processor:
                 return sum
             elif mapping["type"] == "multiply":
                 # Multiply all of the "objects" together
-                product = 0
+                product = 1
 
                 for obj in mapping["objects"]:
                     try:
@@ -207,7 +211,7 @@ class Processor:
                 # Condition didn't pass, send the "else" value
                 return self.process_mapping(mapping.get("else"), record)
         except:
-            logger.log_info(f'Unable to run mapping {mapping} for record: {record}')
+            logger.log_info(f"Unable to run mapping {mapping} for record: {record}")
 
     def process_record(self, stream, record, root=None):
         root = root if root else record
@@ -240,26 +244,25 @@ class Processor:
         )
 
         for key in nested_sources:
-                next_level = key[len(stream + ".") :].split(".")[0]
-                next_stream = f"{stream}.{next_level}"
-                items = nested_get(record, next_level)
+            next_level = key[len(stream + ".") :].split(".")[0]
+            next_stream = f"{stream}.{next_level}"
+            items = nested_get(record, next_level)
 
-                if isinstance(items, list):
-                    for i in range(len(items)):
-                        item = copy.deepcopy(items[i])
-                        item["@parent"] = record
-                        item["@root"] = root
-                        item["@index"] = i
-                        self.process_record(next_stream, item, root)
-                elif items:
-                    item = copy.deepcopy(items)
-                    try:
-                        item["@parent"] = record
-                        item["@root"] = root
-                    except:
-                        logger.log_info(f'Error trying to set parent/root {item}')
+            if isinstance(items, list):
+                for i in range(len(items)):
+                    item = copy.deepcopy(items[i])
+                    item["@parent"] = record
+                    item["@root"] = root
+                    item["@index"] = i
                     self.process_record(next_stream, item, root)
-
+            elif items:
+                item = copy.deepcopy(items)
+                try:
+                    item["@parent"] = record
+                    item["@root"] = root
+                except:
+                    logger.log_info(f"Error trying to set parent/root {item}")
+                self.process_record(next_stream, item, root)
 
     def process_state(self, message):
         # Forward state along
