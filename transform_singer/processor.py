@@ -250,10 +250,16 @@ class Processor:
 
             if isinstance(items, list):
                 for i in range(len(items)):
-                    item = copy.deepcopy(items[i])
+                    if type(items[i]) is not dict:
+                        item = {"@item": items[i]}
+                    else:
+                        item = copy.deepcopy(items[i])
+                        item["@item"] = item
+
                     item["@parent"] = record
                     item["@root"] = root
                     item["@index"] = i
+
                     self.process_record(next_stream, item, root)
             elif items:
                 item = copy.deepcopy(items)
