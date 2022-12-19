@@ -12,6 +12,8 @@ class Processor:
         self.config = args.config
 
     def process_schema(self, message):
+        # This function isn't implemented yet.
+        # It would be used for filtering out only certain fields for processing
         # TODO convert schema based on mappings
         for key in self.config["mappings"].keys():
             # Loop through all of our mappings to see if we find a mapping that is a subset of the current mapping
