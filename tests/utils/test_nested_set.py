@@ -47,7 +47,7 @@ class TestNestedSet(unittest.TestCase):
 
     def test_array_dict2(self):
         obj = {}
-        obj = nested_set(obj, "foo[1].fiz", "baz")
-        self.assertDictEqual(obj, {"foo": [None, {"fiz": "baz"}]})
-        obj = nested_set(obj, "foo[1].fiz", "bar")
-        self.assertDictEqual(obj, {"foo": [None, {"fiz": "bar"}]})
+        obj = nested_set(obj, "entity_data.foo[1].fiz", "baz")
+        self.assertDictEqual(obj, {"entity_data":{"foo": [None, {"fiz": "baz"}]}})
+        obj = nested_set(obj, "entity_data.foo[1].fiz", "bar")
+        self.assertDictEqual(obj, {"entity_data":{"foo": [None, {"fiz": "bar"}]}})
