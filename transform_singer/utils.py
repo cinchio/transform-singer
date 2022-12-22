@@ -92,7 +92,7 @@ def nested_set(record, target, value):
             else:
                 # Add item to this spot in the array
                 index = int(index)
-                if index > len(record[next_level]):
+                if index + 1 > len(record[next_level]):
                     record[next_level] += (1 + index - len(record[next_level])) * [None]
 
                 if not record[next_level][index]:
