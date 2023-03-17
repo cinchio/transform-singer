@@ -230,9 +230,12 @@ class Processor:
 
                 for target, conf in mapping["properties"].items():
                     # Loop through each mapping item and set the the value on the record
-                    mapped_record = nested_set(
-                        mapped_record, target, self.process_mapping(conf, record)
-                    )
+                    value = self.process_mapping(conf, record)
+                    if value != '':
+                        # Ignore empty strings
+                        mapped_record = nested_set(
+                            mapped_record, target, value
+                        )
 
                 # Add the record to the queue for posting to API later
                 singer.write_record(mapping["stream"], mapped_record)
