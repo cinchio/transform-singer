@@ -146,4 +146,7 @@ def nested_get(record: dict, target: str):
         next_level, extra_levels = target.split(".", 1)
         return nested_get(record.get(next_level, {}), extra_levels)
 
+    if not record:
+        return None
+
     return record.get(target)

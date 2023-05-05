@@ -101,7 +101,7 @@ class Processor:
                     (
                         self.process_mapping(mapping, record)
                         for mapping in mapping["objects"]
-                        if self.process_mapping(mapping, record)
+                        if self.process_mapping(mapping, record) or self.process_mapping(mapping, record) == 0
                     ),
                     None,
                 )
