@@ -18,8 +18,15 @@ def main():
 
     input_messages = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
     for message in input_messages:
-        message = json.loads(message)
-        processor.process(message)
+        message = message.strip()
+
+        if not message:
+            continue
+        try:
+            message = json.loads(message)
+            processor.process(message)
+        except:
+            print(message)
 
 
 if __name__ == "__main__":
