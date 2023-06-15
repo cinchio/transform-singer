@@ -84,7 +84,7 @@ class Processor:
             elif mapping["type"] == "float":
                 # Set a hard coded text value
                 try:
-                    return float(mapping["val"])
+                    return float(mapping["val"] or 0)
                 except:
                     return None
             elif mapping["type"] == "join":
@@ -117,7 +117,7 @@ class Processor:
                 ).hexdigest()
             elif mapping["type"] == "tofloat":
                 try:
-                    return float(self.process_mapping(mapping["object"], record))
+                    return float(self.process_mapping(mapping["object"], record) or 0)
                 except:
                     return None
             elif mapping["type"] == "sum":
@@ -126,7 +126,7 @@ class Processor:
 
                 for obj in mapping["objects"]:
                     try:
-                        sum += float(self.process_mapping(obj, record))
+                        sum += float(self.process_mapping(obj, record) or 0)
                     except ValueError:
                         pass
 
@@ -137,7 +137,7 @@ class Processor:
 
                 for obj in mapping["objects"]:
                     try:
-                        product *= float(self.process_mapping(obj, record))
+                        product *= float(self.process_mapping(obj, record) or 0)
                     except ValueError:
                         pass
 
@@ -150,9 +150,9 @@ class Processor:
                 for obj in mapping["objects"]:
                     try:
                         if is_first:
-                            quotient = float(self.process_mapping(obj, record))
+                            quotient = float(self.process_mapping(obj, record) or 0)
                         else:
-                            quotient *= float(self.process_mapping(obj, record))
+                            quotient *= float(self.process_mapping(obj, record) or 0)
                     except ValueError:
                         pass
 
@@ -167,9 +167,9 @@ class Processor:
                 for obj in mapping["objects"]:
                     try:
                         if is_first:
-                            diff = float(self.process_mapping(obj, record))
+                            diff = float(self.process_mapping(obj, record) or 0)
                         else:
-                            diff -= float(self.process_mapping(obj, record))
+                            diff -= float(self.process_mapping(obj, record) or 0)
                     except ValueError:
                         pass
 
