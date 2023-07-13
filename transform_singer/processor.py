@@ -223,7 +223,7 @@ class Processor:
                 mapped_record = {}
 
                 if "exclude" in mapping and bool(
-                    self.process_mapping(mapping["exclude"], mapped_record)
+                    self.process_mapping(mapping["exclude"], record)
                 ):
                     # Skip this record because of the config
                     continue
