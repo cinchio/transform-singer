@@ -22,11 +22,19 @@ def main():
 
         if not message:
             continue
+
         try:
             message = json.loads(message)
             processor.process(message)
-        except:
-            print(message)
+        except ValueError:
+            bits = message.split(' ', 1)
+
+            try:
+                # Check if we have a JSON log message
+                message = json.loads(bits[1])
+                processor.process_log(message)
+            except (ValueError, IndexError):
+                print(message, flush=True)
 
 
 if __name__ == "__main__":

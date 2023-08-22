@@ -1,6 +1,7 @@
 import singer
 import copy
 from singer import logger
+import json
 import hashlib
 from transform_singer.utils import nested_get, nested_set
 
@@ -278,6 +279,14 @@ class Processor:
     def process_state(self, message):
         # Forward state along
         singer.write_state(message["value"])
+
+    def process_log(self, message):
+        if message.get('event') == 'START':
+            # Augement data and pass along
+            message['company'] = self.config['meta'].get('company_id')
+            message['credential'] = self.config['meta'].get('credential_id')
+
+        logger.log_info(json.dumps(message))
 
     def process(self, message):
         if message["type"] == "SCHEMA":
