@@ -10,7 +10,20 @@ class Processor:
     config = None
 
     def __init__(self, args):
-        self.config = args.config
+        self.config = args.config or {}
+
+        if not self.config.get('meta'):
+            # We shouldn't end up here but we have it just in case.
+            self.config['meta'] = {}
+
+        # Grab the tap_config and add it to the config meta.
+        try:
+            with open('tap_config.json') as f:
+                d = json.load(f)
+                self.config['meta'].update(d)
+        except Exception as e:
+            # Unable to parse/load tap_config json.... so we just ignore it
+            pass
 
     def process_schema(self, message):
         # This function isn't implemented yet.
