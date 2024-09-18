@@ -3,7 +3,7 @@ import copy
 from singer import logger
 import json
 import hashlib
-from transform_singer.utils import nested_get, nested_set
+from transform_singer.utils import nested_get, nested_set, replace_deep
 
 
 class Processor:
@@ -250,8 +250,8 @@ class Processor:
                         # Ignore empty strings... but not NULL?
                         continue
 
-                    if isinstance(value, str):
-                        value = value.replace('\u0000', '')
+                    # Recursively replace any unicode null characters with empty string
+                    value = replace_deep(value, '\u0000', '')
 
                     mapped_record = nested_set(
                         mapped_record, target, value

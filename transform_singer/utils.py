@@ -150,3 +150,14 @@ def nested_get(record: dict, target: str):
         return None
 
     return record.get(target)
+
+def replace_deep(data, a, b):
+    if isinstance(data, str):
+        return data.replace(a, b)
+    elif isinstance(data, dict):
+        return {k: replace_deep(v, a, b) for k, v in data.items()}
+    elif isinstance(data, list):
+        return [replace_deep(v, a, b) for v in data]
+    else:
+        # nothing to do?
+        return data
