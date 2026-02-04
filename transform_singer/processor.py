@@ -268,8 +268,15 @@ class Processor:
             ]
         )
 
+        # Extract unique next levels to avoid processing the same nested object multiple times
+        # For example, both "records.transaction.items" and "records.transaction.coupons"
+        # should only cause "records.transaction" to be processed once
+        next_levels = set()
         for key in nested_sources:
             next_level = key[len(stream + ".") :].split(".")[0]
+            next_levels.add(next_level)
+
+        for next_level in next_levels:
             next_stream = f"{stream}.{next_level}"
             items = nested_get(record, next_level)
 
